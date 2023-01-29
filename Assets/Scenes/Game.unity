@@ -417,7 +417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 370765f1d44030f4b9c8db2610e6567f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startHealth: 10
+  startHealth: 3
   moveSpeed: 5
 --- !u!114 &1593053043
 MonoBehaviour:
