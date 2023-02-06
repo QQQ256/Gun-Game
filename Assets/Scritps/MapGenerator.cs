@@ -18,7 +18,9 @@ public class MapGenerator : MonoBehaviour
     public float outlinePercent;
 
     List<Coord> allTileCoords;
-    Queue<Coord> shuffledTileCoords;
+    Queue<Coord> shuffledTileCoords; // 所有方块，被打乱的方块
+    Queue<Coord> shuffledOpenTileCoords; // 除了障碍物的所有方块，玩家和敌人都能踩的方块
+    Transform[,] tileMap;
 
     Map currentMap;
 
@@ -32,6 +34,7 @@ public class MapGenerator : MonoBehaviour
         // 设置障碍物的高度
         currentMap = maps[mapIndex];
         System.Random prng = new System.Random(currentMap.seed);
+        tileMap = new Transform[currentMap.mapSize.x, currentMap.mapSize.y];
 
         // 设置碰撞体大小
         GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, .05f, currentMap.mapSize.y * tileSize);
@@ -72,7 +75,8 @@ public class MapGenerator : MonoBehaviour
                 Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
                 newTile.localScale = Vector3.one * (1 - outlinePercent) * tileSize;
                 newTile.parent = mapHolder;
-                // Debug.Log(tilePosition + ", " + newTile.name);
+                
+                tileMap[x, y] = newTile;
             }
         }
 
@@ -81,6 +85,8 @@ public class MapGenerator : MonoBehaviour
         bool[,] obstacleMap = new bool[(int)currentMap.mapSize.x, (int)currentMap.mapSize.y]; // 记录哪些地方已经有障碍物了
         int obstacleCount = (int)(currentMap.mapSize.x * currentMap.mapSize.y * currentMap.obstaclePercent); // 通过比率计算出要生成的障碍物个数
         int currentObstacleCount = 0;
+        List<Coord> openTileLists = new List<Coord>(allTileCoords); // 复制所有的coords进来，将是障碍物的coord从list内移除
+
         for (int i = 0; i < obstacleCount; i++)
         {
             Coord randomCoord = GetRandomCoord();
@@ -102,12 +108,17 @@ public class MapGenerator : MonoBehaviour
                 float colorPercent = randomCoord.y / (float)currentMap.mapSize.y;
                 obstacleMaterial.color = Color.Lerp(currentMap.foregroundColor, currentMap.backgroundColor, colorPercent);
                 obstacleRenderer.sharedMaterial = obstacleMaterial;
+
+                // 移除是障碍物的coord
+                openTileLists.Remove(randomCoord);
             }
             else{
                 // 回溯!?
                 obstacleMap[randomCoord.x, randomCoord.y] = false;
             }
         }
+
+        shuffledOpenTileCoords = new Queue<Coord>(Utility.ShuffleArray(openTileLists.ToArray(), currentMap.seed));
 
         // 设置四个mask，分别围住地图，以此去除一些寻路
         // 宽度的计算：最长的边是maxMapSize.x，中间地图的边是mapSize.x，获取的点是左边或右边的一个差值的一半，也就是差值的中点，所以 / 4
@@ -164,6 +175,17 @@ public class MapGenerator : MonoBehaviour
         return targetAccessibleTileNumber == accessibleTileNumber;
     }
 
+    public Transform PositionToCoord(Vector3 position){
+        //  对CoordToPosition的运算进行方程计算，求x
+        int x = Mathf.RoundToInt(position.x / tileSize + (currentMap.mapSize.x - 1) / 2f); // Mathf.RoundToInt会四舍五入，而(int)则不会，会损失精度
+        int y = Mathf.RoundToInt(position.z / tileSize + (currentMap.mapSize.y - 1) / 2f);
+
+        // 设置x和y的范围，确保在地图内，[0...(len - 1)]
+        x = Mathf.Clamp(x, 0, tileMap.GetLength(0) - 1);
+        y = Mathf.Clamp(y, 0, tileMap.GetLength(1) - 1);
+        return tileMap[x, y];
+    }
+
     private Vector3 CoordToPosition(int x, int y){
         return new Vector3(-currentMap.mapSize.x / 2f + 0.5f + x, 0, -currentMap.mapSize.y / 2f + 0.5f + y) * tileSize;
     }
@@ -173,6 +195,12 @@ public class MapGenerator : MonoBehaviour
         Coord randomCoord = shuffledTileCoords.Dequeue();
         shuffledTileCoords.Enqueue(randomCoord);
         return randomCoord;
+    }
+
+    public Transform GetRandomOpenTile(){
+        Coord randomCoord = shuffledOpenTileCoords.Dequeue();
+        shuffledOpenTileCoords.Enqueue(randomCoord);
+        return tileMap[randomCoord.x, randomCoord.y];
     }
 
     // 该结构体用于存储每个生成的方块的坐标
