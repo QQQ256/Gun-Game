@@ -26,7 +26,13 @@ public class MapGenerator : MonoBehaviour
 
     Coord mapCenter;
 
-    private void Start() {
+    private void Awake()
+    {
+        FindObjectOfType<Spawner>().OnNewWave += OnNewWave; // Spawner中的event 订阅当前的OnNewWave method
+    }
+
+    void OnNewWave(int waveNumber){
+        mapIndex = waveNumber - 1;
         GenerateMap();
     }
 

@@ -18,7 +18,7 @@ public class Projectile : MonoBehaviour
         if (initalCollision.Length > 0)
         {
             // 默认给第一个碰撞体
-            OnHitObject(initalCollision[0]);
+            OnHitObject(initalCollision[0], transform.position);
         }
     }
 
@@ -39,27 +39,16 @@ public class Projectile : MonoBehaviour
         RaycastHit hit;
 
         if(Physics.Raycast(ray, out hit, moveDistance + closerWidthToEnemy, collisionMask, QueryTriggerInteraction.Collide)){
-            OnHitObject(hit);
+            OnHitObject(hit.collider, hit.point);
         }
     }
 
-    void OnHitObject(RaycastHit hit){
-
-        IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
-        if (damageableObject != null)
-        {
-            damageableObject.TakeHit(damage, hit);
-        }
-        print(hit.collider.transform.name);
-        GameObject.Destroy(gameObject);
-    }
-
-    void OnHitObject(Collider c){
+    void OnHitObject(Collider c, Vector3 hitPoint){
 
         IDamageable damageableObject = c.GetComponent<IDamageable>();
         if (damageableObject != null)
         {
-            damageableObject.TakeDamage(damage);
+            damageableObject.TakeHit(damage, hitPoint, transform.forward);
         }
         print(c.transform.name);
         GameObject.Destroy(gameObject);

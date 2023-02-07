@@ -6,6 +6,7 @@ public class Spawner : MonoBehaviour
 {
     public Enemy enemy;
     public Wave[] waves;
+    public event System.Action<int> OnNewWave; // <int>存储现在是第几波
 
     [System.Serializable]
     public class Wave{
@@ -30,14 +31,15 @@ public class Spawner : MonoBehaviour
     Transform playerTransform;
 
     void Start(){
-        NextWave();
         map = FindObjectOfType<MapGenerator>();
         playerEntity = FindObjectOfType<Player>();
-        playerEntity.OnDeath += OnPlayerDeath; // 不使用player中的dead，而是subscribe一个函数
         playerTransform = playerEntity.transform;
 
         nextCampCheckTime = Time.time + timeBetweenToCheckPlayerPositionTime;
         playerOldPosition = playerTransform.position;
+
+        playerEntity.OnDeath += OnPlayerDeath; // 不使用player中的dead，而是subscribe一个函数
+        NextWave();
     }
 
     void Update()
@@ -100,12 +102,24 @@ public class Spawner : MonoBehaviour
         }
     }
 
+
     void NextWave(){
         currentWaveNumber++;
         if(currentWaveNumber - 1 < waves.Length){
             currentWave = waves[currentWaveNumber - 1];
             enemiesRemainingToSpawn = currentWave.enemyCount;
             enemiesRemainingToLive = enemiesRemainingToSpawn;
+
+            if(OnNewWave != null){
+                OnNewWave(currentWaveNumber);
+            }
+
+            ResetPlayerPosition();
         }
+    }
+
+    [ContextMenu("hahha")]
+    void ResetPlayerPosition(){
+        playerTransform.position = map.PositionToCoord(Vector3.zero).position + Vector3.up * 3;
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : LivingEntity
 {
+    public ParticleSystem deathEffect;
     public enum State {Idle, Chasing, Attacking};
 
     State currentState;
@@ -43,6 +44,16 @@ public class Enemy : LivingEntity
             hasTarget = true;
             StartCoroutine(UpdatePath());
         }
+    }
+
+    public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
+    {
+        // particle effect 
+        if(damage >= health){
+            // Quaternion.FromToRotation(a, b)，从a坐标旋转到b坐标
+            Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, deathEffect.main.startLifetimeMultiplier); 
+        }
+        base.TakeHit(damage, hitPoint, hitDirection);
     }
 
     void OnTargetDeath(){

@@ -14,12 +14,13 @@ public class LivingEntity : MonoBehaviour, IDamageable
         health = startHealth;
     }
 
-    public void TakeHit(float damage, RaycastHit hit)
+    public virtual void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
     {
         // do sth for this function later: ex. partical effect
         TakeDamage(damage);
     }
 
+    [ContextMenu("Self Destruct")] // 写了这个，可以右键脚本，选中这个就能直接调用这个函数，非常便于测试!!!
     protected void Die(){
         dead = true;
         if(OnDeath != null){
@@ -28,7 +29,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
         GameObject.Destroy(gameObject);
     }
 
-    public void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage)
     {
         health -= damage;
 
