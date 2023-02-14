@@ -18,6 +18,7 @@ public class MuzzleFlash : MonoBehaviour
 
         int flashSpriteIndex = Random.Range(0, flashSprites.Length);
         for(int i = 0; i < spriteRenderers.Length; i++){
+            spriteRenderers[i].gameObject.SetActive(true);
             spriteRenderers[i].sprite = flashSprites[flashSpriteIndex];
         }
 
@@ -25,6 +26,9 @@ public class MuzzleFlash : MonoBehaviour
     }
 
     void Deactivate(){
+        for(int i = 0; i < spriteRenderers.Length; i++){
+            spriteRenderers[i].gameObject.SetActive(false);
+        }
         flashHolder.gameObject.SetActive(false);
     }
 }

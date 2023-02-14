@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+    public bool devMode;
     public Enemy enemy;
     public Wave[] waves;
     public event System.Action<int> OnNewWave; // <int>存储现在是第几波
 
     [System.Serializable]
     public class Wave{
+        public bool infinite;
         public int enemyCount;
+        public int hitsToKillPlayer;
         public float timeBetweenSpawns;
+        public float moveSpeed;
+        public float enemyHealth;
+        public Color skinColor;
     }
 
     Wave currentWave;
@@ -52,14 +58,25 @@ public class Spawner : MonoBehaviour
                 isCamping = Vector3.Distance(playerOldPosition, playerTransform.position) < campThresholdDistance;
                 // 设定上一波玩家的最后位置
                 playerOldPosition = playerTransform.position;
+                
             }
-
-            if (enemiesRemainingToSpawn > 0 && Time.time > nextSpawnTime)
+            
+            if ((enemiesRemainingToSpawn > 0 || currentWave.infinite) && Time.time > nextSpawnTime)
             {
                 enemiesRemainingToSpawn--;
                 nextSpawnTime = Time.time + currentWave.timeBetweenSpawns;
                 
                 StartCoroutine(SpawnEnemy());
+            }
+        }
+
+        if(devMode){
+            if(Input.GetKeyDown(KeyCode.Return)){
+                StopCoroutine(SpawnEnemy());
+                foreach(Enemy enemy in FindObjectsOfType<Enemy>()){
+                    GameObject.Destroy(enemy.gameObject);
+                }
+                NextWave();
             }
         }
     }
@@ -78,7 +95,7 @@ public class Spawner : MonoBehaviour
         }
 
         Material tileMaterial = randomTilePos.GetComponent<Renderer>().material;
-        Color initalColor = tileMaterial.color;
+        Color initalColor = Color.white;
         Color flashColor = Color.red;
 
         while(spawnTimer < spawnDelayTime){
@@ -89,6 +106,7 @@ public class Spawner : MonoBehaviour
 
         Enemy spawnEnemy = Instantiate(enemy, randomTilePos.position + Vector3.up, Quaternion.identity) as Enemy;
         spawnEnemy.OnDeath += OnEnemyDeath; // subscribe this function: OnEnemyDeath. If the enemy is dead, OnDeath call this function.
+        spawnEnemy.SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer, currentWave.enemyHealth, currentWave.skinColor);
     }
 
     void OnPlayerDeath(){

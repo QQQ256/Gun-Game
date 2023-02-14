@@ -8,6 +8,8 @@ public class Player : LivingEntity
 {
     public float moveSpeed = 5f;
 
+    public CrossHairs crossHairs;
+
     Camera viewCamera;
     PlayerController controller;
     GunController gunController;
@@ -30,7 +32,7 @@ public class Player : LivingEntity
 
         // look input
         Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero); // 它的法线方向为Vector3.up，即为y轴正方向，它的原点为Vector3.zero，即为原点。这个Plane对象可以用来检测物体和地面的碰撞或者其他用途。
+        Plane groundPlane = new Plane(Vector3.up, Vector3.up * gunController.GetWeaponHeight); // 它的法线方向为Vector3.up，即为y轴正方向，它的原点为Vector3.zero，即为原点。这个Plane对象可以用来检测物体和地面的碰撞或者其他用途。
         float rayDistance;
 
         /*
@@ -62,11 +64,17 @@ public class Player : LivingEntity
             Vector3 point = ray.GetPoint(rayDistance);
             Debug.DrawLine(ray.origin, point, Color.red);
             controller.LookAt(point);
+
+            crossHairs.transform.position = point;
+            crossHairs.DetectEnemy(ray);
         }
 
         // weapon input
         if(Input.GetMouseButton(0)){
-            gunController.Shoot();
+            gunController.OnTriggerHold();
+        }
+        if(Input.GetMouseButtonUp(0)){
+            gunController.OnTriggerRelease();
         }
     }
 }

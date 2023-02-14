@@ -11,6 +11,7 @@ public class MapGenerator : MonoBehaviour
     public Transform obstaclePrefab;
     public Transform navMeshFloor;
     public Transform navMeshPrefab;
+    public Transform mapFloor; // 地面，代码控制
     public Vector2 maxMapSize; // set navmesh quad size
     public float tileSize;
 
@@ -43,7 +44,7 @@ public class MapGenerator : MonoBehaviour
         tileMap = new Transform[currentMap.mapSize.x, currentMap.mapSize.y];
 
         // 设置碰撞体大小
-        GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, .05f, currentMap.mapSize.y * tileSize);
+        // GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, .05f, currentMap.mapSize.y * tileSize);
 
         mapCenter = new Coord((int)(currentMap.mapSize.x / 2), (int)(currentMap.mapSize.y / 2));
 
@@ -147,6 +148,9 @@ public class MapGenerator : MonoBehaviour
         maskDown.localScale = new Vector3(maxMapSize.x, 1, (maxMapSize.y - currentMap.mapSize.y) / 2f) * tileSize;
 
         navMeshFloor.localScale = new Vector3(maxMapSize.x, maxMapSize.y) * tileSize;
+    
+        // set ground floor size
+        mapFloor.localScale = new Vector3(currentMap.mapSize.x, currentMap.mapSize.y) * tileSize;
     }
 
 

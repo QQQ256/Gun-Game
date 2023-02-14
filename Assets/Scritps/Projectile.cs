@@ -5,6 +5,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     public LayerMask collisionMask;
+    public Color trailColor;
     float speed = 10f;
     float damage = 1;
     float lifeTime = 3f;
@@ -20,6 +21,8 @@ public class Projectile : MonoBehaviour
             // 默认给第一个碰撞体
             OnHitObject(initalCollision[0], transform.position);
         }
+
+        GetComponent<TrailRenderer>().material.SetColor("_TintColor", trailColor);
     }
 
     public void SetSpeed(float newSpeed){

@@ -25,25 +25,42 @@ public class Enemy : LivingEntity
     Color originalColor;
     bool hasTarget; // check if player is dead
 
-    protected override void Start()
-    {
-        base.Start();        
+    private void Awake() {
         pathFinder = GetComponent<NavMeshAgent>();
-        skinMaterial = GetComponent<Renderer>().material;
-        originalColor = skinMaterial.color;
 
         if(GameObject.FindGameObjectWithTag("Player") != null){
             target = GameObject.FindGameObjectWithTag("Player").transform;
             targetEntity = target.GetComponent<LivingEntity>();
-            targetEntity.OnDeath += OnTargetDeath;
-
             myCollisionRadius = GetComponent<CapsuleCollider>().radius;
             targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
 
-            currentState = State.Chasing;
             hasTarget = true;
+        }
+    }
+
+    protected override void Start()
+    {
+        base.Start();        
+
+        if(hasTarget){
+            targetEntity.OnDeath += OnTargetDeath;
+            currentState = State.Chasing;
             StartCoroutine(UpdatePath());
         }
+    }
+
+    // this method is called before the Start() method
+    public void SetCharacteristics(float speed, int hitsToKillPlayer, float enemyHealth, Color skinColor){
+        pathFinder.speed = speed;
+        startHealth = enemyHealth;
+        if(hasTarget){
+            // Mathf.Ceil是Unity中的一个数学函数，用于向上取整
+            damage = Mathf.Ceil(targetEntity.startHealth / hitsToKillPlayer);
+        }
+
+        skinMaterial = GetComponent<Renderer>().material;
+        skinMaterial.color = skinColor;
+        originalColor = skinMaterial.color;
     }
 
     public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
