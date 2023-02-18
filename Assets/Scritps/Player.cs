@@ -14,12 +14,17 @@ public class Player : LivingEntity
     PlayerController controller;
     GunController gunController;
 
-    protected override void Start()
-    {
-        base.Start();
+    private void Awake() {
         gunController = GetComponent<GunController>();
         controller = GetComponent<PlayerController>();
         viewCamera = Camera.main;
+        
+        FindObjectOfType<Spawner>().OnNewWave += OnNewWave;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
     }
 
     // Update is called once per frame
@@ -67,6 +72,12 @@ public class Player : LivingEntity
 
             crossHairs.transform.position = point;
             crossHairs.DetectEnemy(ray);
+
+            float distanceBetweenCursorAndPlayer = (new Vector3(point.x, point.y, point.z) - new Vector3(transform.position.x, transform.position.y, transform.position.z)).sqrMagnitude;
+            // 计算鼠标 - player之间的距离，若低于某个值则不进行AimAt
+            if(distanceBetweenCursorAndPlayer > 1.2f){  
+                gunController.AimAt(point);
+            }
         }
 
         // weapon input
@@ -76,5 +87,19 @@ public class Player : LivingEntity
         if(Input.GetMouseButtonUp(0)){
             gunController.OnTriggerRelease();
         }
+        if(Input.GetKeyDown(KeyCode.R)){
+            gunController.Reload();
+        }
+    }
+
+    void OnNewWave(int waveNumber){
+        health = startHealth;
+        gunController.EuqibGun(waveNumber - 1);
+    }
+
+    public override void Die()
+    {
+        AudioManager.instance.PlaySound("Player Death", transform.position);
+        base.Die();
     }
 }

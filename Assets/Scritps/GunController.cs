@@ -6,14 +6,11 @@ public class GunController : MonoBehaviour
 {
     public Transform weaponHold;
 
-    public Gun originGun;
+    public Gun[] allGuns;
 
     Gun equipGun;
 
     private void Start() {
-        if(originGun != null){
-            EuqibGun(originGun);
-        }
     }
 
     // instantiate a new gun when the player is equipping the gun.
@@ -23,6 +20,16 @@ public class GunController : MonoBehaviour
         }
         equipGun = Instantiate(gunToEquip, weaponHold.position, weaponHold.rotation);
         equipGun.transform.parent = weaponHold;
+    }
+
+    public void EuqibGun(int weaponIndex){
+        EuqibGun(allGuns[weaponIndex]);
+    }
+
+    public void AimAt(Vector3 transform){
+        if(equipGun != null){
+            equipGun.AimAt(transform);
+        }
     }
 
     public void OnTriggerHold(){
@@ -41,6 +48,12 @@ public class GunController : MonoBehaviour
     public float GetWeaponHeight{
         get {
             return weaponHold.position.y;
+        }
+    }
+
+    public void Reload(){
+        if(equipGun != null){
+            equipGun.Reload();
         }
     }
 }

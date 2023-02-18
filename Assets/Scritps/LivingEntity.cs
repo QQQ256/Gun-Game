@@ -7,7 +7,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
     public float startHealth;
 
     public event System.Action OnDeath;
-    protected float health;
+    public float health {get; protected set;}
     protected bool dead;
 
     protected virtual void Start() {
@@ -21,7 +21,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
     }
 
     [ContextMenu("Self Destruct")] // 写了这个，可以右键脚本，选中这个就能直接调用这个函数，非常便于测试!!!
-    protected void Die(){
+    public virtual void Die(){
         dead = true;
         if(OnDeath != null){
             OnDeath();

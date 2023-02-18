@@ -8,6 +8,8 @@ public class Enemy : LivingEntity
 {
     public ParticleSystem deathEffect;
     public enum State {Idle, Chasing, Attacking};
+    // 由于敌人众多，但只需要一个事件，所以这里设置为static
+    public static event System.Action OnDeathStatic; 
 
     State currentState;
     NavMeshAgent pathFinder;
@@ -58,15 +60,21 @@ public class Enemy : LivingEntity
             damage = Mathf.Ceil(targetEntity.startHealth / hitsToKillPlayer);
         }
 
-        skinMaterial = GetComponent<Renderer>().material;
+        skinMaterial = GetComponent<Renderer>().sharedMaterial;
         skinMaterial.color = skinColor;
         originalColor = skinMaterial.color;
     }
 
     public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
     {
-        // particle effect 
+        AudioManager.instance.PlaySound("Impact", transform.position);
+
+        // Enemy death
         if(damage >= health){
+            if(OnDeathStatic != null){
+                OnDeathStatic();
+            }
+            AudioManager.instance.PlaySound("Enemy Death", transform.position);
             // Quaternion.FromToRotation(a, b)，从a坐标旋转到b坐标
             Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, deathEffect.main.startLifetimeMultiplier); 
         }
@@ -87,6 +95,7 @@ public class Enemy : LivingEntity
                 // 计算边缘到另一个边缘的距离，所以加上半径
                 if(sqrtDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)){
                     nextAttackTime = Time.time + timeBetweenAttack;
+                    AudioManager.instance.PlaySound("Enemy Attack", transform.position);
                     StartCoroutine(Attack());
                 }
             }   
