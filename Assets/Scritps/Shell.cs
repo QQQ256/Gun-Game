@@ -17,7 +17,7 @@ public class Shell : MonoBehaviour
         myRigidbody.AddForce(transform.right * force);
         myRigidbody.AddTorque(Random.insideUnitSphere * force);
 
-        StartCoroutine(Fade());
+        MonoManager.GetInstance().StartCoroutine(Fade());
     }
 
     IEnumerator Fade(){

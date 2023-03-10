@@ -102,9 +102,9 @@ public class Enemy : LivingEntity
 
         // enemy death logic
         if(damage >= health){
-            if(OnDeathStatic != null){
-                OnDeathStatic();
-            }         
+            // if(OnDeathStatic != null){
+            //     OnDeathStatic();
+            // }         
 
             hasTarget = false;
 

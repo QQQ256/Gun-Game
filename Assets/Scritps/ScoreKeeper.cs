@@ -11,32 +11,23 @@ public class ScoreKeeper : MonoBehaviour
     int streakCount;
     void Start()
     {
-        Enemy.OnDeathStatic += OnEnemyKilled;
-        // FindObjectOfType<Player>().OnDeath += OnPlayerDeath;
+        EventCenter.GetInstance().AddEventListener("OnEnemyDeath", OnEnemyKilled);
         EventCenter.GetInstance().AddEventListener("OnPlayerDeath", OnPlayerDeath);
     }
 
     private void OnDisable() {
         EventCenter.GetInstance().RemoveEventListener("OnPlayerDeath", OnPlayerDeath);
+        EventCenter.GetInstance().RemoveEventListener("OnEnemyDeath", OnEnemyKilled);
     }
     
     void OnEnemyKilled(){
-        // if(Time.time < lastEnemyKillTime + streakExpireTime){
-        //     streakCount++;
-        // }
-        // else{
-        //     streakCount = 0;
-        // }
-
-        // lastEnemyKillTime = Time.time;
-
-        // score += 5 + (int)Mathf.Pow(2, streakCount);
         score += 5;
     }
 
     // 玩家死后重新开始游戏，上面的事件会被订阅两次
     // 所以这里检测玩家死亡后应该取消订阅OnEnemyKilled()
     void OnPlayerDeath(){
-        Enemy.OnDeathStatic -= OnEnemyKilled;
+        // Enemy.OnDeathStatic -= OnEnemyKilled;
+        EventCenter.GetInstance().RemoveEventListener("OnEnemyDeath", OnEnemyKilled);
     }
 }

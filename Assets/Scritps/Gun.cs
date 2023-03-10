@@ -46,13 +46,18 @@ public class Gun : MonoBehaviour
         for(int i = 0; i < projectileSpawn.Length; i++){
             projectileSpawn[i].gameObject.SetActive(false);
         }
+
+        MonoManager.GetInstance().AddUpdateEventListener(GunUpdate);
     }
 
-    // transform.localEulerAngles写在update()中修复了换子弹朝天问题
-    private void Update() {
+    private void OnDisable() {
+        MonoManager.GetInstance().RemoveUpdateEventListener(GunUpdate);
+    }
+
+    private void GunUpdate(){
         transform.localEulerAngles = Vector3.left * recoilAngle;
     }
-
+    
     // 使用LateUpdate的原因是this.transform.LookAt会overwrite 修改的rotation
     // 所以这里写在LateUpdate里面
     void LateUpdate(){

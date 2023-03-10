@@ -30,13 +30,15 @@ public class GameUI : MonoBehaviour
         player = FindObjectOfType<Player>();
         // FindObjectOfType<Player>().OnDeath += OnGameOver;
         EventCenter.GetInstance().AddEventListener("OnPlayerDeath", OnGameOver);
+        MonoManager.GetInstance().AddUpdateEventListener(UIUpdate);
     }
 
     private void OnDisable() {
         EventCenter.GetInstance().RemoveEventListener("OnPlayerDeath", OnGameOver);
+        MonoManager.GetInstance().RemoveUpdateEventListener(UIUpdate);
     }
 
-    void Update(){
+    private void UIUpdate(){
         scoreUI.text = ScoreKeeper.score.ToString("D6");
         float healthPercent = 0;
         if(player != null){
@@ -44,6 +46,7 @@ public class GameUI : MonoBehaviour
         }
         playerHealthBar.localScale = new Vector3(healthPercent, 1, 1);
     }
+
     void OnNewWave(int waveNumber){
         string[] numbers = {"One", "Two", "Three", "Four", "Five"};
         newWaveTitle.text = "- Wave " + numbers[waveNumber - 1] + " -";
@@ -51,12 +54,12 @@ public class GameUI : MonoBehaviour
         newWaveEnemyCount.text = "Enemies: " + enemyCountString;
 
         // 推荐使用字符串的方式开启和停止coroutine（前提是没有参数传递）
-        StopCoroutine("AnimateNewWaveBanner");
-        StartCoroutine("AnimateNewWaveBanner");
+        MonoManager.GetInstance().StopCoroutine(AnimateNewWaveBanner());
+        MonoManager.GetInstance().StartCoroutine(AnimateNewWaveBanner());
     }
 
     void OnGameOver(){
-        StartCoroutine(Fade(Color.clear, Color.black, 1));
+        MonoManager.GetInstance().StartCoroutine(Fade(Color.clear, Color.black, 1));
 
         scoreUI.gameObject.SetActive(false);
         playerHealthBar.transform.parent.gameObject.SetActive(false);
@@ -119,5 +122,7 @@ public class GameUI : MonoBehaviour
 
     public void ReturnToMenu(){
         SceneManager.LoadScene("Menu");
+        PoolManager.GetInstance().Clear();
+        EventCenter.GetInstance().Clear();
     }
 }
