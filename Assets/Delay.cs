@@ -9,7 +9,7 @@ public class Delay : MonoBehaviour
         Invoke("Push", 1);
    }
 
-    void Push(){
+    public void Push(){
         PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
     }
 }

@@ -60,6 +60,7 @@ public class PoolManager : BaseManager<PoolManager>
     public void PushObjectToPool(string name, GameObject obj){
         if(poolObject == null)
             poolObject = new GameObject("Pool");
+            // GameObject.DontDestroyOnLoad(poolObject);
 
         // 将物体层级置于poolObject下面
         obj.transform.parent = poolObject.transform;

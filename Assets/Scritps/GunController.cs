@@ -10,9 +10,6 @@ public class GunController : MonoBehaviour
 
     Gun equipGun;
 
-    private void Start() {
-    }
-
     // instantiate a new gun when the player is equipping the gun.
     public void EuqibGun(Gun gunToEquip){
         if(equipGun != null){

@@ -13,12 +13,15 @@ public class CrossHairs : MonoBehaviour
     private void Start() {
         Cursor.visible = false;
         originalColor = dot.color;
+
+        MonoManager.GetInstance().AddUpdateEventListener(CorssHairUpdate);
     }
 
-    void Update()
-    {
-        // 做一个自动旋转的效果
-        transform.Rotate(Vector3.forward * 40 * Time.deltaTime);
+    private void CorssHairUpdate(){
+        if(this.gameObject != null){
+            // 做一个自动旋转的效果
+            transform.Rotate(Vector3.forward * 40 * Time.deltaTime);
+        }
     }
 
     public void DetectEnemy(Ray ray){
@@ -28,5 +31,13 @@ public class CrossHairs : MonoBehaviour
        else{
         dot.color = originalColor;
        }
+    }
+
+    private void OnEnable() {
+        // SceneMgr.GetInstance()
+    }
+
+    private void OnDisable() {
+        MonoManager.GetInstance().RemoveUpdateEventListener(CorssHairUpdate);
     }
 }

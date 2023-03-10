@@ -49,6 +49,23 @@ public class Enemy : LivingEntity
             currentState = State.Chasing;
             StartCoroutine(UpdatePath());
         }
+
+        // EventCenter.GetInstance().AddEventListener("EnemyDeath", OnEnemyDeath);
+        MonoManager.GetInstance().AddUpdateEventListener(EnemyUpdate);
+    }
+
+    private void EnemyUpdate(){
+        if(hasTarget){
+            if(Time.time > nextAttackTime){
+                sqrtDstToTarget = (target.position - transform.position).sqrMagnitude; // good performace without using Vector3.Distance
+                // 计算边缘到另一个边缘的距离，所以加上半径
+                if(sqrtDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)){
+                    nextAttackTime = Time.time + timeBetweenAttack;
+                    AudioManager.instance.PlaySound("Enemy Attack", transform.position);
+                    StartCoroutine(Attack());
+                }
+            }   
+        }
     }
 
     // this method is called before the Start() method
@@ -69,13 +86,15 @@ public class Enemy : LivingEntity
     {
         AudioManager.instance.PlaySound("Impact", transform.position);
 
-        // Enemy death
+        // Enemy death, handle enemy death logic
         if(damage >= health){
             if(OnDeathStatic != null){
                 OnDeathStatic();
             }
+            // PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
+            MonoManager.GetInstance().RemoveUpdateEventListener(EnemyUpdate);
+            Debug.Log("Push enemy to pool");
             AudioManager.instance.PlaySound("Enemy Death", transform.position);
-            // Quaternion.FromToRotation(a, b)，从a坐标旋转到b坐标
             Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, deathEffect.main.startLifetimeMultiplier); 
         }
         base.TakeHit(damage, hitPoint, hitDirection);
@@ -84,22 +103,6 @@ public class Enemy : LivingEntity
     void OnTargetDeath(){
         hasTarget = false;
         currentState = State.Idle;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if(hasTarget){
-            if(Time.time > nextAttackTime){
-                sqrtDstToTarget = (target.position - transform.position).sqrMagnitude; // good performace without using Vector3.Distance
-                // 计算边缘到另一个边缘的距离，所以加上半径
-                if(sqrtDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)){
-                    nextAttackTime = Time.time + timeBetweenAttack;
-                    AudioManager.instance.PlaySound("Enemy Attack", transform.position);
-                    StartCoroutine(Attack());
-                }
-            }   
-        }
     }
 
     // 模拟往前攻击的效果，核心是使用到的方程。
@@ -157,5 +160,9 @@ public class Enemy : LivingEntity
             
             yield return new WaitForSeconds(refreshRate);
         }
+    }
+
+    private void OnEnemyDeath(){
+        PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
     }
 }

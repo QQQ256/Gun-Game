@@ -19,17 +19,17 @@ public class Player : LivingEntity
         controller = GetComponent<PlayerController>();
         viewCamera = Camera.main;
         
+        // EventCenter.GetInstance().AddEventListener<int>("OnNewWave", OnNewWave);
         FindObjectOfType<Spawner>().OnNewWave += OnNewWave;
     }
 
     protected override void Start()
     {
         base.Start();
+        MonoManager.GetInstance().AddUpdateEventListener(PlayerUpdate);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    private void PlayerUpdate(){
         // movement input
         Vector3 moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")); // GetAxis is smoothed based on the “sensitivity” setting so that value gradually changes from 0 to 1, or 0 to -1. Whereas GetAxisRaw will only ever return 0, -1, or 1 exactly
         Vector3 moveVelocity = moveInput.normalized* moveSpeed;
@@ -99,7 +99,8 @@ public class Player : LivingEntity
 
     public override void Die()
     {
-        AudioManager.instance.PlaySound("Player Death", transform.position);
         base.Die();
+        AudioManager.instance.PlaySound("Player Death", transform.position);
+        MonoManager.GetInstance().RemoveUpdateEventListener(PlayerUpdate);
     }
 }

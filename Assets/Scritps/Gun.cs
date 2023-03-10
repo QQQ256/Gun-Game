@@ -92,13 +92,20 @@ public class Gun : MonoBehaviour
                 }
 
                 projectilesRemainingInMag--;
-                nextShotTime             = Time.time + msBetweenShots / 1000;
-                Projectile newProjectile = Instantiate(projectile, projectileSpawn[i].position, projectileSpawn[i].rotation) as Projectile;
-                newProjectile.SetSpeed(muzzleVelocity);
+                nextShotTime              = Time.time + msBetweenShots / 1000;
+                GameObject bullet         = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Bullet");
+                bullet.transform.position = projectileSpawn[i].position;
+                bullet.transform.rotation = projectileSpawn[i].rotation;
+                bullet.GetComponent<Projectile>().SetSpeed(muzzleVelocity);
+                // Projectile newProjectile = Instantiate(projectile, projectileSpawn[i].position, projectileSpawn[i].rotation) as Projectile;
+                // newProjectile.SetSpeed(muzzleVelocity);
             }
 
             // 弹壳
-            Instantiate(shell, shellEjection.position, shellEjection.rotation);
+            GameObject shell = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Shell");
+            shell.transform.position = shellEjection.position;
+            shell.transform.rotation = shellEjection.rotation;
+            // Instantiate(shell, shellEjection.position, shellEjection.rotation);
 
             // 火光
             muzzleFlash.Activate();

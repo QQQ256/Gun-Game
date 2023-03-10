@@ -6,13 +6,22 @@ public class Projectile : MonoBehaviour
 {
     public LayerMask collisionMask;
     public Color trailColor;
+    public float lifeTime = 3f;
     float speed = 10f;
     float damage = 1;
-    float lifeTime = 3f;
     float closerWidthToEnemy = .1f; // 当敌人运动速度极快，update中子弹没有检测到敌人（因为已经进入低人体内），这里加入一个极小的偏差来修复这个问题
 
+    private void OnEnable() {
+        Invoke("PushBackToPool", lifeTime);
+        MonoManager.GetInstance().AddUpdateEventListener(ProjectileUpdate);
+    }
+
+    private void OnDisable() {
+        MonoManager.GetInstance().RemoveUpdateEventListener(ProjectileUpdate);
+    }
+
     private void Start() {
-        Destroy(gameObject, lifeTime);
+        // Destroy(gameObject, lifeTime);
 
         // 若子弹最初就生成在一个敌人体内，则raycast无法做出判断，此时需要用这个overlap函数进行判断
         Collider[] initalCollision = Physics.OverlapSphere(transform.position, 0.1f, collisionMask);
@@ -25,12 +34,13 @@ public class Projectile : MonoBehaviour
         GetComponent<TrailRenderer>().material.SetColor("_TintColor", trailColor);
     }
 
+
     public void SetSpeed(float newSpeed){
         speed = newSpeed;
     }
 
     // Update is called once per frame
-    void Update()
+    void ProjectileUpdate()
     {
         float moveDistance = Time.deltaTime * speed;
         CheckCollisions(moveDistance);
@@ -54,6 +64,12 @@ public class Projectile : MonoBehaviour
             damageableObject.TakeHit(damage, hitPoint, transform.forward);
         }
         print(c.transform.name);
-        GameObject.Destroy(gameObject);
+
+        PushBackToPool();
+        // GameObject.Destroy(gameObject);
+    }
+
+    void PushBackToPool(){
+        PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
     }
 }

@@ -18,6 +18,7 @@ public class MonoManager : BaseManager<MonoManager>
     }    
 
     // 封装add和remove方法，之后就可以在其他地方调用MonoController中的方法了！
+    // 使用方式：调用manager，在start中加入要在update方法中使用函数的监听
     public void AddUpdateEventListener(UnityAction func){
         monoController.AddUpdateEventListener(func);
     }

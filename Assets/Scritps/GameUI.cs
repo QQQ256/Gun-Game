@@ -108,6 +108,8 @@ public class GameUI : MonoBehaviour
     // UI Input
     public void StartNewGame(){
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        PoolManager.GetInstance().Clear();
+        EventCenter.GetInstance().Clear();
     }
 
     public void ReturnToMenu(){

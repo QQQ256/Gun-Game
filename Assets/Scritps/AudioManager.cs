@@ -55,8 +55,16 @@ public class AudioManager : MonoBehaviour
             musicVolumePercent = PlayerPrefs.GetFloat("music vol", 1);
         }
     }
+    
+    private void Start() {
+        MonoManager.GetInstance().AddUpdateEventListener(AudioUpdate);
+    }
 
-    private void Update() {
+    private void OnDisable() {
+        MonoManager.GetInstance().RemoveUpdateEventListener(AudioUpdate);
+    }
+
+    private void AudioUpdate() {
         if(playerTransform != null){
             audioListener.position = playerTransform.position;
         }
