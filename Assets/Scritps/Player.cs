@@ -102,5 +102,6 @@ public class Player : LivingEntity
         base.Die();
         AudioManager.instance.PlaySound("Player Death", transform.position);
         MonoManager.GetInstance().RemoveUpdateEventListener(PlayerUpdate);
+        EventCenter.GetInstance().EventTrigger("OnPlayerDeath");
     }
 }

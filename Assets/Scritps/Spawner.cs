@@ -44,13 +44,18 @@ public class Spawner : MonoBehaviour
         nextCampCheckTime = Time.time + timeBetweenToCheckPlayerPositionTime;
         playerOldPosition = playerTransform.position;
 
-        playerEntity.OnDeath += OnPlayerDeath; // 不使用player中的dead，而是subscribe一个函数
+        // playerEntity.OnDeath += OnPlayerDeath; // 不使用player中的dead，而是subscribe一个函数
+
+        EventCenter.GetInstance().AddEventListener("OnEnemyDeath", OnEnemyDeath);
+        EventCenter.GetInstance().AddEventListener("OnPlayerDeath", OnPlayerDeath);
         MonoManager.GetInstance().AddUpdateEventListener(SpawnUpdate);
         NextWave();
     }
     
     void OnDisable(){
         MonoManager.GetInstance().RemoveUpdateEventListener(SpawnUpdate);
+        EventCenter.GetInstance().RemoveEventListener("OnEnemyDeath", OnEnemyDeath);
+        EventCenter.GetInstance().RemoveEventListener("OnPlayerDeath", OnPlayerDeath);
     }
 
     private void SpawnUpdate(){
@@ -111,11 +116,7 @@ public class Spawner : MonoBehaviour
         GameObject spawnEnemy = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Enemy");
         spawnEnemy.transform.position = randomTilePos.position + Vector3.up;
         spawnEnemy.transform.rotation = Quaternion.identity;
-        spawnEnemy.GetComponent<Enemy>().OnDeath += OnEnemyDeath;
         spawnEnemy.GetComponent<Enemy>().SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer, currentWave.enemyHealth, currentWave.skinColor);
-        // Enemy spawnEnemy = Instantiate(enemy, randomTilePos.position + Vector3.up, Quaternion.identity) as Enemy;
-        // spawnEnemy.GetComponent<Enemy>().OnDeath += OnEnemyDeath; // subscribe this function: OnEnemyDeath. If the enemy is dead, OnDeath call this function.
-        // spawnEnemy.GetComponent<Enemy>().SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer, currentWave.enemyHealth, currentWave.skinColor);
     }
 
     void OnPlayerDeath(){
@@ -123,8 +124,6 @@ public class Spawner : MonoBehaviour
     }
 
     void OnEnemyDeath(){
-        // PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
-        Debug.Log("OnEnemyDeath Delegate!");
         enemiesRemainingToLive--;
         if(enemiesRemainingToLive == 0){
             NextWave();
@@ -147,8 +146,6 @@ public class Spawner : MonoBehaviour
                 OnNewWave(currentWaveNumber);
             }
 
-            // EventCenter.GetInstance().EventTrigger("OnNewWave");
-
             ResetPlayerPosition();
         }
     }
@@ -157,5 +154,4 @@ public class Spawner : MonoBehaviour
     void ResetPlayerPosition(){
         playerTransform.position = map.PositionToCoord(Vector3.zero).position + Vector3.up * 3;
     }
-
 }

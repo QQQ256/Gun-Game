@@ -12,9 +12,14 @@ public class ScoreKeeper : MonoBehaviour
     void Start()
     {
         Enemy.OnDeathStatic += OnEnemyKilled;
-        FindObjectOfType<Player>().OnDeath += OnPlayerDeath;
+        // FindObjectOfType<Player>().OnDeath += OnPlayerDeath;
+        EventCenter.GetInstance().AddEventListener("OnPlayerDeath", OnPlayerDeath);
     }
 
+    private void OnDisable() {
+        EventCenter.GetInstance().RemoveEventListener("OnPlayerDeath", OnPlayerDeath);
+    }
+    
     void OnEnemyKilled(){
         // if(Time.time < lastEnemyKillTime + streakExpireTime){
         //     streakCount++;

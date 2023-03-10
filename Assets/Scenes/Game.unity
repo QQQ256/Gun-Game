@@ -10641,7 +10641,7 @@ MonoBehaviour:
   enemy: {fileID: 515215461829902238, guid: db46abe2a68c5284c8a4f5978d3adb15, type: 3}
   waves:
   - infinite: 0
-    enemyCount: 100
+    enemyCount: 3
     hitsToKillPlayer: 5
     timeBetweenSpawns: 0.5
     moveSpeed: 2

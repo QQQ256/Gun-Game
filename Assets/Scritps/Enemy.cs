@@ -34,6 +34,7 @@ public class Enemy : LivingEntity
     private void OnEnable() {
         pathFinder = GetComponent<NavMeshAgent>();
 
+
         if(GameObject.FindGameObjectWithTag("Player") != null){
             target = GameObject.FindGameObjectWithTag("Player").transform;
             targetEntity = target.GetComponent<LivingEntity>();
@@ -44,11 +45,17 @@ public class Enemy : LivingEntity
         }
         
         if(hasTarget){
-            targetEntity.OnDeath += OnTargetDeath;
             currentState = State.Chasing;
+
             MonoManager.GetInstance().StartCoroutine(UpdatePath());
             MonoManager.GetInstance().AddUpdateEventListener(EnemyUpdate);
+
+            EventCenter.GetInstance().AddEventListener("OnPlayerDeath", OnTargetDeath);
         }
+    }
+
+    private void OnDisable() {
+        EventCenter.GetInstance().RemoveEventListener("OnPlayerDeath", OnTargetDeath);
     }
 
     protected override void Start()
@@ -92,6 +99,8 @@ public class Enemy : LivingEntity
         AudioManager.instance.PlaySound("Impact", transform.position);
 
         health -= damage;
+
+        // enemy death logic
         if(damage >= health){
             if(OnDeathStatic != null){
                 OnDeathStatic();
@@ -113,6 +122,8 @@ public class Enemy : LivingEntity
             MonoManager.GetInstance().RemoveUpdateEventListener(EnemyUpdate);
 
             PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
+
+            EventCenter.GetInstance().EventTrigger("OnEnemyDeath");
         }
     }
 

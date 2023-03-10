@@ -28,7 +28,12 @@ public class GameUI : MonoBehaviour
     void Start()
     {
         player = FindObjectOfType<Player>();
-        FindObjectOfType<Player>().OnDeath += OnGameOver;
+        // FindObjectOfType<Player>().OnDeath += OnGameOver;
+        EventCenter.GetInstance().AddEventListener("OnPlayerDeath", OnGameOver);
+    }
+
+    private void OnDisable() {
+        EventCenter.GetInstance().RemoveEventListener("OnPlayerDeath", OnGameOver);
     }
 
     void Update(){

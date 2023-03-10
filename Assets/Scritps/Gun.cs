@@ -146,7 +146,6 @@ public class Gun : MonoBehaviour
             float interpolation         = (-Mathf.Pow(percent, 2) + percent) * 4;
             float reloadAngle           = Mathf.Lerp(0, maxReloadAngle, interpolation);
             transform.localEulerAngles  = initalRot + Vector3.left * reloadAngle;
-            Debug.Log(transform.localEulerAngles);
             yield return null;
         }
 

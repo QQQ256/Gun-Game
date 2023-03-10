@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Delay : MonoBehaviour
 {
-   
     protected void OnEnable() {
         Invoke("Push", 1);
     }
