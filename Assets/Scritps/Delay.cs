@@ -5,11 +5,12 @@ using UnityEngine;
 public class Delay : MonoBehaviour
 {
    
-    void OnEnable() {
+    protected void OnEnable() {
         Invoke("Push", 1);
-   }
+    }
 
-    public void Push(){
+    protected void Push(){
+        Debug.Log("Pushed + "  + this.gameObject.name);
         PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
     }
 }

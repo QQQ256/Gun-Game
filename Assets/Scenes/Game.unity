@@ -10641,7 +10641,7 @@ MonoBehaviour:
   enemy: {fileID: 515215461829902238, guid: db46abe2a68c5284c8a4f5978d3adb15, type: 3}
   waves:
   - infinite: 0
-    enemyCount: 3
+    enemyCount: 100
     hitsToKillPlayer: 5
     timeBetweenSpawns: 0.5
     moveSpeed: 2
@@ -14229,7 +14229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponHold: {fileID: 149943892}
   allGuns:
-  - {fileID: 7801754954711866620, guid: b93981a07a01a494382f97e494754631, type: 3}
+  - {fileID: 3172659338069825365, guid: 2d3566bcb4e03224dad7bd626256a502, type: 3}
   - {fileID: 3172659338069825365, guid: 2d3566bcb4e03224dad7bd626256a502, type: 3}
   - {fileID: 6528718296819339291, guid: bf148b9b5a147e74387ca661da2c0720, type: 3}
   - {fileID: 7801754954711866620, guid: b93981a07a01a494382f97e494754631, type: 3}

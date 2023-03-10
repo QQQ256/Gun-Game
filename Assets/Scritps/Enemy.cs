@@ -28,6 +28,10 @@ public class Enemy : LivingEntity
     bool hasTarget; // check if player is dead
 
     private void Awake() {
+        
+    }
+
+    private void OnEnable() {
         pathFinder = GetComponent<NavMeshAgent>();
 
         if(GameObject.FindGameObjectWithTag("Player") != null){
@@ -38,23 +42,18 @@ public class Enemy : LivingEntity
 
             hasTarget = true;
         }
-    }
-
-    private void OnEnable() {
+        
         if(hasTarget){
             targetEntity.OnDeath += OnTargetDeath;
             currentState = State.Chasing;
-            StartCoroutine(UpdatePath());
+            MonoManager.GetInstance().StartCoroutine(UpdatePath());
+            MonoManager.GetInstance().AddUpdateEventListener(EnemyUpdate);
         }
-
-        // EventCenter.GetInstance().AddEventListener("EnemyDeath", OnEnemyDeath);
-        MonoManager.GetInstance().AddUpdateEventListener(EnemyUpdate);
     }
 
     protected override void Start()
     {
         base.Start();        
-
     }
 
     private void EnemyUpdate(){
@@ -65,7 +64,8 @@ public class Enemy : LivingEntity
                 if(sqrtDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)){
                     nextAttackTime = Time.time + timeBetweenAttack;
                     AudioManager.instance.PlaySound("Enemy Attack", transform.position);
-                    StartCoroutine(Attack());
+                    // StartCoroutine(Attack());
+                    MonoManager.GetInstance().StartCoroutine(Attack());
                 }
             }   
         }
@@ -73,6 +73,8 @@ public class Enemy : LivingEntity
 
     // this method is called before the Start() method
     public void SetCharacteristics(float speed, int hitsToKillPlayer, float enemyHealth, Color skinColor){
+        Debug.Log("SetCharacteristics");
+
         pathFinder.speed = speed;
         startHealth = enemyHealth;
         if(hasTarget){
@@ -89,20 +91,29 @@ public class Enemy : LivingEntity
     {
         AudioManager.instance.PlaySound("Impact", transform.position);
 
-        // Enemy death, handle enemy death logic
         health -= damage;
         if(damage >= health){
             if(OnDeathStatic != null){
                 OnDeathStatic();
-            }
-            // PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
-            MonoManager.GetInstance().RemoveUpdateEventListener(EnemyUpdate);
-            Debug.Log("Push enemy to pool");
+            }         
+
+            hasTarget = false;
+
             AudioManager.instance.PlaySound("Enemy Death", transform.position);
-            Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, deathEffect.main.startLifetimeMultiplier); 
+
+            // death effect instantiation (from object pool)
+            GameObject enemyDeathEffect = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Enemy_Death_Effect");
+            if(enemyDeathEffect != null){
+                enemyDeathEffect.transform.position = hitPoint;
+                enemyDeathEffect.transform.rotation = Quaternion.FromToRotation(Vector3.forward, hitDirection);
+            }
+           
+            MonoManager.GetInstance().StopCoroutine(UpdatePath());
+            MonoManager.GetInstance().StopCoroutine(Attack());
+            MonoManager.GetInstance().RemoveUpdateEventListener(EnemyUpdate);
+
             PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
         }
-        // base.TakeHit(damage, hitPoint, hitDirection);
     }
 
     void OnTargetDeath(){

@@ -124,6 +124,7 @@ public class Spawner : MonoBehaviour
 
     void OnEnemyDeath(){
         // PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
+        Debug.Log("OnEnemyDeath Delegate!");
         enemiesRemainingToLive--;
         if(enemiesRemainingToLive == 0){
             NextWave();

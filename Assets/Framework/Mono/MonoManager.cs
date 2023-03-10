@@ -40,4 +40,8 @@ public class MonoManager : BaseManager<MonoManager>
     public Coroutine StartCoroutine(string methodName, [DefaultValue("null")] object value){
         return monoController.StartCoroutine(methodName, value);
     }
+
+    public void StopCoroutine(IEnumerator routine){
+        monoController.StopCoroutine(routine);
+    }
 }
