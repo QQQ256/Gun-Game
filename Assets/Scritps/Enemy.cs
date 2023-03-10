@@ -40,10 +40,7 @@ public class Enemy : LivingEntity
         }
     }
 
-    protected override void Start()
-    {
-        base.Start();        
-
+    private void OnEnable() {
         if(hasTarget){
             targetEntity.OnDeath += OnTargetDeath;
             currentState = State.Chasing;
@@ -52,6 +49,12 @@ public class Enemy : LivingEntity
 
         // EventCenter.GetInstance().AddEventListener("EnemyDeath", OnEnemyDeath);
         MonoManager.GetInstance().AddUpdateEventListener(EnemyUpdate);
+    }
+
+    protected override void Start()
+    {
+        base.Start();        
+
     }
 
     private void EnemyUpdate(){
@@ -87,6 +90,7 @@ public class Enemy : LivingEntity
         AudioManager.instance.PlaySound("Impact", transform.position);
 
         // Enemy death, handle enemy death logic
+        health -= damage;
         if(damage >= health){
             if(OnDeathStatic != null){
                 OnDeathStatic();
@@ -96,8 +100,9 @@ public class Enemy : LivingEntity
             Debug.Log("Push enemy to pool");
             AudioManager.instance.PlaySound("Enemy Death", transform.position);
             Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, deathEffect.main.startLifetimeMultiplier); 
+            PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
         }
-        base.TakeHit(damage, hitPoint, hitDirection);
+        // base.TakeHit(damage, hitPoint, hitDirection);
     }
 
     void OnTargetDeath(){

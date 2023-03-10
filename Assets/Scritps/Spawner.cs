@@ -108,12 +108,14 @@ public class Spawner : MonoBehaviour
             yield return null;
         }
 
-        // GameObject spawnEnemy = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Enemy");
-        // spawnEnemy.transform.position = randomTilePos.position + Vector3.up;
-        // spawnEnemy.transform.rotation = Quaternion.identity;
-        Enemy spawnEnemy = Instantiate(enemy, randomTilePos.position + Vector3.up, Quaternion.identity) as Enemy;
-        spawnEnemy.GetComponent<Enemy>().OnDeath += OnEnemyDeath; // subscribe this function: OnEnemyDeath. If the enemy is dead, OnDeath call this function.
+        GameObject spawnEnemy = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Enemy");
+        spawnEnemy.transform.position = randomTilePos.position + Vector3.up;
+        spawnEnemy.transform.rotation = Quaternion.identity;
+        spawnEnemy.GetComponent<Enemy>().OnDeath += OnEnemyDeath;
         spawnEnemy.GetComponent<Enemy>().SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer, currentWave.enemyHealth, currentWave.skinColor);
+        // Enemy spawnEnemy = Instantiate(enemy, randomTilePos.position + Vector3.up, Quaternion.identity) as Enemy;
+        // spawnEnemy.GetComponent<Enemy>().OnDeath += OnEnemyDeath; // subscribe this function: OnEnemyDeath. If the enemy is dead, OnDeath call this function.
+        // spawnEnemy.GetComponent<Enemy>().SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer, currentWave.enemyHealth, currentWave.skinColor);
     }
 
     void OnPlayerDeath(){
