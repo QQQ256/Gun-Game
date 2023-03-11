@@ -76,13 +76,19 @@ public class UIManager : BaseManager<UIManager>
             obj.transform.SetParent(root);
 
             // 归零初始化位置
-            obj.transform.localPosition = Vector3.zero;
-            obj.transform.localScale = Vector3.one;
+            obj.transform.localPosition                = Vector3.zero;
+            obj.transform.localScale                   = Vector3.one;
             (obj.transform as RectTransform).offsetMax = Vector2.zero;
             (obj.transform as RectTransform).offsetMin = Vector2.zero;
 
             // 获取面板上所挂载的脚本
             T panel = obj.GetComponent<T>();
+            if (panel == null)
+            {
+                Debug.LogError("Failed to get component: " + typeof(T));
+                return;
+            }
+
             if(callBack != null){
                 callBack(panel);
             }

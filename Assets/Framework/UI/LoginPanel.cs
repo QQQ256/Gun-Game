@@ -21,12 +21,6 @@ public class LoginPanel : BasePanel
         });
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     protected override void OnClick(string name)
     {
         switch(name){

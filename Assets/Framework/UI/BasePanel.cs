@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
 
 /// <summary>
 /// 面板基类，找到一个面板下的所有控件
@@ -20,10 +21,13 @@ public class BasePanel : MonoBehaviour
     /// <returns></returns>
     private Dictionary<string, List<UIBehaviour>> panelDic = new Dictionary<string, List<UIBehaviour>>();
 
-    protected virtual void Awake() {
+    protected virtual void Awake()
+    {
+        FindChildComponents<Slider>();
         FindChildComponents<Button>();
         FindChildComponents<Image>();
         FindChildComponents<Text>();
+        FindChildComponents<Toggle>();      
     }
 
     /// <summary>
@@ -39,6 +43,7 @@ public class BasePanel : MonoBehaviour
                 return (component is T) ? (component as T) : null;
             }
         }
+        Debug.LogError(typeof(T) + " was not found!");
         return null;
     }
 
@@ -56,7 +61,7 @@ public class BasePanel : MonoBehaviour
                 panelDic[keyName].Add(component);
             }
             else{
-                // Debug.Log("Create dictionary" + typeof(T).Name);
+                //Debug.Log("Create dictionary" + typeof(T).Name + " with value" + component);
                 panelDic.Add(keyName, new List<UIBehaviour>(){component});  
             }
 
@@ -84,6 +89,14 @@ public class BasePanel : MonoBehaviour
                     OnTiggleChanged(keyName, value);
                 });
             }
+            else if (component is Slider)
+            {
+                // Slider则传入的是float值
+                (component as Slider).onValueChanged.AddListener((value) => {
+                    OnSliderValueChanged(keyName, value);
+                    Debug.Log(value.ToString());
+                });
+            }
         }
     }
 
@@ -100,6 +113,11 @@ public class BasePanel : MonoBehaviour
     }
 
     protected virtual void OnTiggleChanged(string toggleName, bool value){
+
+    }
+
+    protected virtual void OnSliderValueChanged(string sliderName, float value)
+    {
 
     }
 }
