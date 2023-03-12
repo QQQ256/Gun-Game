@@ -47,6 +47,7 @@ public class PoolManager : BaseManager<PoolManager>
 
         if(poolDic.ContainsKey(name) && poolDic[name].poolList.Count > 0){
             // 将list头部的object拿出来
+            Debug.Log("Get object: " + name);
             obj = poolDic[name].GetObj();
         }
         else{

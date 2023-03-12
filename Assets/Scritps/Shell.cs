@@ -10,9 +10,11 @@ public class Shell : MonoBehaviour
 
     float lifeTime = 4f;
     float fadeTime = 2f;
-    // Start is called before the first frame update
-    void Start()
-    {
+
+    Material mat;
+    Color initColor;
+
+    private void OnEnable() {
         float force = Random.Range(forceMin, forceMax);
         myRigidbody.AddForce(transform.right * force);
         myRigidbody.AddTorque(Random.insideUnitSphere * force);
@@ -20,20 +22,27 @@ public class Shell : MonoBehaviour
         MonoManager.GetInstance().StartCoroutine(Fade());
     }
 
+    private void Start() {
+        mat = this.GetComponent<Renderer>().material;
+        initColor = mat.color;
+    }
+
     IEnumerator Fade(){
         yield return new WaitForSeconds(lifeTime);
 
         float percent = 0;
         float fadeSpeed = 1 / fadeTime;
-        Material mat = this.GetComponent<Renderer>().material;
-        Color initalColor = mat.color;
+        // mat = this.GetComponent<Renderer>().material;
 
         while(percent <= 1){
             percent += Time.deltaTime * fadeSpeed;
-            mat.color = Color.Lerp(initalColor, Color.clear, percent);
+            mat.color = Color.Lerp(initColor, Color.clear, percent);
             yield return null;
         }
+    }
 
-        Destroy(this.gameObject);
+    private void OnDisable() {
+        MonoManager.GetInstance().StopCoroutine(Fade());
+        mat.color = initColor;
     }
 }

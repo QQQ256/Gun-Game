@@ -15,7 +15,7 @@ public class SceneMgr : BaseManager<SceneMgr>
     /// </summary>
     /// <param name="name"></param>
     /// <param name="func"></param>
-    public void LoadSceneAsync(string name, UnityAction func){
+    public void LoadSceneAsync(string name, UnityAction func = null){
         // 由于BaseManager没有继承mono，使用monoController中的Coroutine
         MonoManager.GetInstance().StartCoroutine(_LoadSceneAsync(name, func));
     }
@@ -37,7 +37,10 @@ public class SceneMgr : BaseManager<SceneMgr>
         yield return 0;
 
         // 加载完场景之后再执行函数
-        func();
+        if(func != null)
+        {
+            func();
+        }
     }
 
     // public void Dispose(){

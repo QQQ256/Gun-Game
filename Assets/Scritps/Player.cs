@@ -19,7 +19,6 @@ public class Player : LivingEntity
         controller = GetComponent<PlayerController>();
         viewCamera = Camera.main;
         
-        // EventCenter.GetInstance().AddEventListener<int>("OnNewWave", OnNewWave);
         FindObjectOfType<Spawner>().OnNewWave += OnNewWave;
     }
 

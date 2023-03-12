@@ -8,15 +8,12 @@ public class Enemy : LivingEntity
 {
     public ParticleSystem deathEffect;
     public enum State {Idle, Chasing, Attacking};
-    // 由于敌人众多，但只需要一个事件，所以这里设置为static
-    public static event System.Action OnDeathStatic; 
 
     State currentState;
     NavMeshAgent pathFinder;
     Transform target;
     Material skinMaterial;
     LivingEntity targetEntity;
-    // Vector3 targetPosition;
     float attackDistanceThreshold = .5f;
     float sqrtDstToTarget; // the sqrt between two points
     float timeBetweenAttack = 1f;
@@ -34,14 +31,14 @@ public class Enemy : LivingEntity
     private void OnEnable() {
         pathFinder = GetComponent<NavMeshAgent>();
 
-
         if(GameObject.FindGameObjectWithTag("Player") != null){
             target = GameObject.FindGameObjectWithTag("Player").transform;
             targetEntity = target.GetComponent<LivingEntity>();
             myCollisionRadius = GetComponent<CapsuleCollider>().radius;
             targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
 
-            hasTarget = true;
+            if(target != null)
+                hasTarget = true;
         }
         
         if(hasTarget){
@@ -102,15 +99,10 @@ public class Enemy : LivingEntity
 
         // enemy death logic
         if(damage >= health){
-            // if(OnDeathStatic != null){
-            //     OnDeathStatic();
-            // }         
-
             hasTarget = false;
 
             AudioManager.instance.PlaySound("Enemy Death", transform.position);
 
-            // death effect instantiation (from object pool)
             GameObject enemyDeathEffect = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Enemy_Death_Effect");
             if(enemyDeathEffect != null){
                 enemyDeathEffect.transform.position = hitPoint;
@@ -190,6 +182,7 @@ public class Enemy : LivingEntity
     }
 
     private void OnEnemyDeath(){
+        Debug.Log("pushed enemy to pool");
         PoolManager.GetInstance().PushObjectToPool(this.gameObject.name, this.gameObject);
     }
 }

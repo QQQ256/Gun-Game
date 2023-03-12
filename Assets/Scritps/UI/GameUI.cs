@@ -71,12 +71,18 @@ public class GameUI : MonoBehaviour
     }
 
     IEnumerator Fade(Color from, Color to, float time){
+        // Color from = Color.clear;
+        // Color to = Color.black;
+        // float time = 1;
         float speed = 1 / time;
         float percent = 0;
 
         while(percent < 1){
             percent += Time.deltaTime * speed;
-            fadeImage.color = Color.Lerp(from, to, percent);
+            if(fadeImage != null){
+                // 需要检查图片是否被销毁，若在停止携程前被销毁，则会报错NullException
+                fadeImage.color = Color.Lerp(from, to, percent);
+            }
             yield return null;
         }
     }
@@ -116,12 +122,14 @@ public class GameUI : MonoBehaviour
     // UI Input
     public void StartNewGame(){
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        MonoManager.GetInstance().StopCoroutine(Fade(Color.clear, Color.black, 1));
         PoolManager.GetInstance().Clear();
         EventCenter.GetInstance().Clear();
     }
 
     public void ReturnToMenu(){
         SceneManager.LoadScene("Menu");
+        MonoManager.GetInstance().StopCoroutine(Fade(Color.clear, Color.black, 1));
         PoolManager.GetInstance().Clear();
         EventCenter.GetInstance().Clear();
     }

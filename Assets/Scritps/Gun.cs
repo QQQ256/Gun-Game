@@ -102,12 +102,10 @@ public class Gun : MonoBehaviour
                 bullet.transform.position = projectileSpawn[i].position;
                 bullet.transform.rotation = projectileSpawn[i].rotation;
                 bullet.GetComponent<Projectile>().SetSpeed(muzzleVelocity);
-                // Projectile newProjectile = Instantiate(projectile, projectileSpawn[i].position, projectileSpawn[i].rotation) as Projectile;
-                // newProjectile.SetSpeed(muzzleVelocity);
             }
 
             // 弹壳
-            GameObject shell = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Shell");
+            GameObject shell         = PoolManager.GetInstance().GetObjectFromPool("Prefabs/Shell");
             shell.transform.position = shellEjection.position;
             shell.transform.rotation = shellEjection.rotation;
             // Instantiate(shell, shellEjection.position, shellEjection.rotation);

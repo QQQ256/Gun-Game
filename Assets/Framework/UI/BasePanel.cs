@@ -86,7 +86,7 @@ public class BasePanel : MonoBehaviour
             else if(component is Toggle){
                 // Toggle的onValueChanged.AddListener则需要一个bool类型的值传入，所以这里lambda表达式需要一个bool类型的value
                 (component as Toggle).onValueChanged.AddListener((value) => {
-                    OnTiggleChanged(keyName, value);
+                    OnToggleChanged(keyName, value);
                 });
             }
             else if (component is Slider)
@@ -94,7 +94,7 @@ public class BasePanel : MonoBehaviour
                 // Slider则传入的是float值
                 (component as Slider).onValueChanged.AddListener((value) => {
                     OnSliderValueChanged(keyName, value);
-                    Debug.Log(value.ToString());
+                    // Debug.Log(value.ToString());
                 });
             }
         }
@@ -112,7 +112,7 @@ public class BasePanel : MonoBehaviour
 
     }
 
-    protected virtual void OnTiggleChanged(string toggleName, bool value){
+    protected virtual void OnToggleChanged(string toggleName, bool value){
 
     }
 

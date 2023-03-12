@@ -32,14 +32,6 @@ public class LoginPanel : BasePanel
             break;
         }
     }
-
-    protected override void OnTiggleChanged(string toggleName, bool value)
-    {
-        // switch(toggleName){
-
-        // }
-    }
-
     private void OnClickStart(){
         Debug.Log("1111");
     }
