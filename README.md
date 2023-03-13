@@ -1,2 +1,2 @@
 # Gun-Game
-![caption]()https://www.youtube.com/watch?v=hkml10dM0do&ab_channel=%E7%8E%8B%E9%9B%AA%E6%99%B4
+https://user-images.githubusercontent.com/78251233/224779570-8226f82a-13c3-44c2-9657-204d8c4f0496.mp4
